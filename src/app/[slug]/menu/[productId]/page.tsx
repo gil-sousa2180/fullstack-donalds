@@ -21,7 +21,7 @@ const ProdctPage = async ({params}: ProductPageProps) => {
     if (!product) {
     return notFound();
     }
-
+    
     return (
         <div className="flex flex-col h-full">
         <ProductHeader product={product}/>
