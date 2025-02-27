@@ -20,7 +20,7 @@ const CartSheet = () => {
                         <CartProductItem key={product.id} product={product} />
                     ))}
                     </div>
-                    <Card className="mb-4">
+                    <Card className="mb-6">
                         <CardContent className="p-5">
                             <div className="flex justify-between">
                                 <p className="text-sm text-muted-foreground">Total</p>
