@@ -28,6 +28,12 @@ import {
 } from "@/components/ui/form";
 
 import { Input } from "@/components/ui/input";
+import { useParams, useSearchParams } from "next/navigation";
+
+import { ConsumptionMethod } from "@prisma/client";
+import { useContext } from "react";
+import { CartContext } from "../contexts/cart";
+import { createOrder } from "../actions/create-order";
 
 const formSchema = z.object({
   name: z.string().trim().min(1, {
@@ -45,13 +51,17 @@ const formSchema = z.object({
 });
 
 type FormSchema = z.infer<typeof formSchema>;
-
+//SERVER ACTIONS
+// -> funções que são executadas no servidor, mas nçao podem se chamadas de "client components"
 interface FinishOrderDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 const FirishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
+  const { slug } = useParams<{ slug: string }>();
+  const { products } = useContext(CartContext);
+  const searchParams = useSearchParams();
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,8 +70,21 @@ const FirishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
     },
     shouldUnregister: true,
   });
-  const onSubmit = (data: FormSchema) => {
-    console.log({ data });
+  const onSubmit = async (data: FormSchema) => {
+    try {
+      const consumptionMethod = searchParams.get(
+        "consumptionMethod",
+      ) as ConsumptionMethod;
+      await createOrder({
+        consumptionMethod,
+        customerCpf: data.cpf,
+        customerName: data.name,
+        products,
+        slug,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
