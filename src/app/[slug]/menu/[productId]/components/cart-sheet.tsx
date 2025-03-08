@@ -17,7 +17,7 @@ const CartSheet = () => {
   const { isOpen, toggleCart, products, total } = useContext(CartContext);
   return (
     <Sheet open={isOpen} onOpenChange={toggleCart}>
-      <SheetContent className="w-[70%]">
+      <SheetContent className="w-[65%]">
         <SheetHeader>
           <SheetTitle className="text-left">Sacola</SheetTitle>
         </SheetHeader>
@@ -27,7 +27,7 @@ const CartSheet = () => {
               <CartProductItem key={product.id} product={product} />
             ))}
           </div>
-          <Card className="mb-6">
+          <Card className="mb-4">
             <CardContent className="p-5">
               <div className="flex justify-between">
                 <p className="text-sm text-muted-foreground">Total</p>
