@@ -6,8 +6,11 @@ import { Prisma } from "@prisma/client";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Clock10Icon } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Products from "./products";
+import { CartContext } from "../contexts/cart";
+import { formatCurrency } from "@/format-currency";
+import CartSheet from "../[productId]/components/cart-sheet";
 
 interface RestaurantCategoriesProps {
   restaurant: Prisma.RestaurantGetPayload<{
@@ -26,6 +29,8 @@ type MenuCategoriesWithProducts = Prisma.MenuCategoryGetPayload<{
 const RestaurantCategories = ({ restaurant }: RestaurantCategoriesProps) => {
   const [selectedCategory, setselectedCategory] =
     useState<MenuCategoriesWithProducts>(restaurant.menuCategories[0]);
+  const { products, total, toggleCart, totalQuantity } =
+    useContext(CartContext);
   const handleCatgoryClick = (category: MenuCategoriesWithProducts) => {
     setselectedCategory(category);
   };
@@ -52,7 +57,6 @@ const RestaurantCategories = ({ restaurant }: RestaurantCategoriesProps) => {
           <p>Aberto 24hrs!</p>
         </div>
       </div>
-
       <ScrollArea className="w-full">
         <div className="flex w-max space-x-4 p-4 pt-0">
           {restaurant.menuCategories.map((category) => (
@@ -69,11 +73,23 @@ const RestaurantCategories = ({ restaurant }: RestaurantCategoriesProps) => {
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
-      
-      <h3 className="px-4 pt-2 font-semibold py-">{selectedCategory.name}</h3>
-      <Products products={selectedCategory.products}/>
-      <Products products={selectedCategory.products}/>
-      <Products products={selectedCategory.products}/>
+      <h3 className="py- px-4 pt-2 font-semibold">{selectedCategory.name}</h3>
+      <Products products={selectedCategory.products} />
+      {products.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 flex w-full items-center justify-between border-t bg-white px-5 py-3">
+          <div>
+            <p className="text-xs text-muted-foreground">Total dos pedidos</p>
+            <p className="text-sm font-semibold">
+              {formatCurrency(total)}
+              <span className="text-xs font-normal text-muted-foreground">
+                / {totalQuantity} {totalQuantity > 1 ? "items" : "item"}
+              </span>
+            </p>
+          </div>
+          <Button onClick={toggleCart}>Ver sacola</Button>
+          <CartSheet />
+        </div>
+      )}
     </div>
   );
 };
